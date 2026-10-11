@@ -18,10 +18,23 @@ builder.Services.AddSerilog((services, configuration) => configuration
     .WriteTo.LogVue(services));
 
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddHubOptions(options =>
+    {
+        // The circuit default is 32 KB. Code, notes and description travel in one message, so a
+        // longer snippet was dropped and the editor validated as if the code box were empty.
+        // The columns themselves are unbounded text; this is only the transport ceiling.
+        options.MaximumReceiveMessageSize = 32 * 1024 * 1024;
+    });
 
 builder.Services.Configure<HttpConnectionDispatcherOptions>(options =>
-    options.LongPolling.PollTimeout = TimeSpan.FromSeconds(20));
+{
+    options.LongPolling.PollTimeout = TimeSpan.FromSeconds(20);
+
+    // Must be at least MaximumReceiveMessageSize, or a large message is still refused.
+    options.ApplicationMaxBufferSize = 32 * 1024 * 1024;
+    options.TransportMaxBufferSize = 32 * 1024 * 1024;
+});
 
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
