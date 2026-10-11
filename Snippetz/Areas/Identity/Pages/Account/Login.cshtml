@@ -1,0 +1,33 @@
+@page
+@model Snippetz.Areas.Identity.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Sign in";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p class="sz-hint" style="margin-top:0;">Use the administrator account, or one you registered.</p>
+
+<form id="account" method="post">
+    <div asp-validation-summary="ModelOnly" class="sz-validation" role="alert"></div>
+
+    <div class="sz-field">
+        <label asp-for="Input.Email"></label>
+        <input asp-for="Input.Email" class="sz-input" autocomplete="username" autofocus />
+        <span asp-validation-for="Input.Email" class="sz-validation"></span>
+    </div>
+
+    <div class="sz-field">
+        <label asp-for="Input.Password"></label>
+        <input asp-for="Input.Password" class="sz-input" autocomplete="current-password" />
+        <span asp-validation-for="Input.Password" class="sz-validation"></span>
+    </div>
+
+    <label class="sz-check">
+        <input asp-for="Input.RememberMe" />
+        <span>Remember me</span>
+    </label>
+
+    <button id="login-submit" type="submit" class="sz-button sz-button-primary sz-button-block">Sign in</button>
+</form>
+
+<p class="sz-hint">No account yet? <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Create one</a></p>

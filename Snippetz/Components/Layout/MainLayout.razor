@@ -1,0 +1,86 @@
+@inherits LayoutComponentBase
+
+<div class="sz-app @(sidebarOpen ? "sz-sidebar-open" : null)">
+    <header class="sz-topbar">
+        <button type="button" class="sz-icon-button sz-menu-button" aria-label="Toggle sidebar" @onclick="ToggleSidebar">
+            <Icon Name="menu" />
+        </button>
+        <a class="sz-brand" href="/">
+            <img src="favicon.svg" alt="" width="22" height="22" />
+            <span>Snippetz</span>
+        </a>
+        <form class="sz-search" @onsubmit="SearchAsync" @onsubmit:preventDefault="true">
+            <Icon Name="search" />
+            <input @bind="searchText" @bind:event="oninput" placeholder="card lang:csharp tags:ui" aria-label="Search snippets" />
+            <kbd>/</kbd>
+        </form>
+        <div class="sz-topbar-actions">
+            <a class="sz-button sz-button-primary" href="/editor">
+                <Icon Name="plus" /> New
+            </a>
+            <button type="button" class="sz-icon-button" title="@(theme == "dark" ? "Light theme" : "Dark theme")" @onclick="ToggleThemeAsync">
+                <Icon Name="@(theme == "dark" ? "sun" : "moon")" />
+            </button>
+        </div>
+    </header>
+
+    <aside class="sz-sidebar">
+        <nav class="sz-nav">
+            <NavLink class="sz-nav-link" href="/" Match="NavLinkMatch.All">
+                <Icon Name="home" /> Home
+            </NavLink>
+            <NavLink class="sz-nav-link" href="/snippets">
+                <Icon Name="library" /> Library
+            </NavLink>
+            <NavLink class="sz-nav-link" href="/editor" Match="NavLinkMatch.All">
+                <Icon Name="plus" /> Editor
+            </NavLink>
+        </nav>
+
+        @if (sidebar.Tags.Count > 0)
+        {
+            <div>
+                <p class="sz-sidebar-heading">Filter by tag</p>
+                <a class="sz-tag-link @(sidebar.ActiveTag is null ? "is-active" : null)" href="/snippets">
+                    <span>All snippets</span>
+                    <span>@sidebar.SnippetCount</span>
+                </a>
+                @foreach (var tag in sidebar.Tags)
+                {
+                    <a class="sz-tag-link @(tag.Name == sidebar.ActiveTag ? "is-active" : null)"
+                       href="@($"/snippets?tag={Uri.EscapeDataString(tag.Name)}")">
+                        <span>@tag.Name</span>
+                        <span>@tag.Count</span>
+                    </a>
+                }
+            </div>
+        }
+
+        <div class="sz-sidebar-footer">
+            <div class="sz-user">
+                <span>
+                    <strong>@userName</strong>
+                </span>
+                @if (isAdmin)
+                {
+                    <a href="/logvue">Logs</a>
+                }
+            </div>
+            @if (showSignOut)
+            {
+                <form method="post" action="/auth/logout">
+                    <AntiforgeryToken />
+                    <button type="submit" class="sz-button sz-button-block">
+                        <Icon Name="logout" /> Sign out
+                    </button>
+                </form>
+            }
+        </div>
+    </aside>
+
+    <main class="sz-main">
+        @Body
+    </main>
+</div>
+
+<Toaster />

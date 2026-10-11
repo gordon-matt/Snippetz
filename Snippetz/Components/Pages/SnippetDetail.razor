@@ -1,0 +1,80 @@
+@page "/snippet/{Id:int}"
+@attribute [Authorize]
+
+<PageTitle>@(snippet?.Title ?? "Snippet") — Snippetz</PageTitle>
+
+@if (loading)
+{
+    <p>Loading…</p>
+}
+else if (snippet is null)
+{
+    <EmptyState IconName="alert" Title="That snippet isn't here">
+        <p>It may have been deleted, or it belongs to someone else.</p>
+        <a class="sz-button" href="/snippets">Back to the library</a>
+    </EmptyState>
+}
+else
+{
+    <div class="sz-page-header">
+        <h1 style="display:flex; align-items:center; gap:0.4rem;">
+            @snippet.Title
+            <button type="button" class="sz-icon-button @(snippet.IsPinned ? "is-pinned" : null)" title="@(snippet.IsPinned ? "Unpin" : "Pin")" @onclick="TogglePinAsync">
+                <Icon Name="@(snippet.IsPinned ? "pin" : "pin-off")" />
+            </button>
+        </h1>
+        <p>@(string.IsNullOrWhiteSpace(snippet.Description) ? "No description" : snippet.Description)</p>
+    </div>
+
+    <div class="sz-split">
+        <section class="sz-panel">
+            <div class="sz-panel-header">
+                <span class="sz-badge @SnippetFormat.BadgeClass(snippet.Language)">@snippet.Language</span>
+                <button type="button" class="sz-link-button" @onclick="CopyCodeAsync">
+                    <Icon Name="copy" /> Copy code
+                </button>
+            </div>
+            <pre class="sz-code"><code class="language-@SnippetFormat.HighlightClass(snippet.Language)">@snippet.Code</code></pre>
+        </section>
+
+        <aside class="sz-panel">
+            <div class="sz-panel-body">
+                <div class="sz-chip-row">
+                    @foreach (var tag in snippet.Tags)
+                    {
+                        <a class="sz-badge sz-badge-5" href="@($"/snippets?tag={Uri.EscapeDataString(tag)}")">@tag</a>
+                    }
+                </div>
+                <ul class="sz-meta-list">
+                    <li><span>Created</span><span>@SnippetFormat.Relative(snippet.CreatedAt)</span></li>
+                    <li><span>Updated</span><span>@SnippetFormat.Relative(snippet.UpdatedAt)</span></li>
+                </ul>
+                <div class="sz-actions" style="margin-top: 0.9rem;">
+                    <a class="sz-button sz-button-primary sz-button-block" href="@($"/editor/{snippet.Id}")">
+                        <Icon Name="edit" /> Edit
+                    </a>
+                    <button type="button" class="sz-button sz-button-block" @onclick="CopyRawUrlAsync">
+                        <Icon Name="copy" /> Copy raw URL
+                    </button>
+                    <button type="button" class="sz-button sz-button-danger sz-button-block" @onclick="DeleteAsync">
+                        <Icon Name="trash" /> Delete
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(snippet.Docs))
+    {
+        <section class="sz-panel sz-section">
+            <div class="sz-panel-header">
+                <strong>Documentation</strong>
+            </div>
+            <div class="sz-panel-body sz-markdown">
+                @((MarkupString)docsHtml)
+            </div>
+        </section>
+    }
+}
+
+<ConfirmDialog @ref="confirm" />

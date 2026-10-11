@@ -1,0 +1,68 @@
+@page "/"
+@attribute [Authorize]
+
+<PageTitle>Home — Snippetz</PageTitle>
+
+<div class="sz-page-header">
+    <h1>Search</h1>
+    <p>Find a snippet by words, <span class="sz-mono">lang:</span> or <span class="sz-mono">tags:</span>. Press Enter in the bar above.</p>
+</div>
+
+@if (loading)
+{
+    <p class="sz-hint">Loading…</p>
+}
+else if (loadError is not null)
+{
+    <EmptyState IconName="alert" Title="The library could not be read">
+        @loadError
+    </EmptyState>
+}
+else if (searching)
+{
+    <section class="sz-section" style="margin-top: 0;">
+        <h2>Results</h2>
+        @if (results.Count == 0)
+        {
+            <EmptyState IconName="search" Title="Nothing matches">
+                Try a shorter query, or drop the <span class="sz-mono">lang:</span> and <span class="sz-mono">tags:</span> filters.
+            </EmptyState>
+        }
+        else
+        {
+            <div class="sz-grid">
+                @foreach (var snippet in results)
+                {
+                    <SnippetCard Snippet="snippet" OnPin="TogglePinAsync" />
+                }
+            </div>
+        }
+    </section>
+}
+
+@if (!loading && loadError is null && pinned.Count > 0)
+{
+    <section class="sz-section">
+        <h2>Pinned snippets</h2>
+        <div class="sz-grid">
+            @foreach (var snippet in pinned)
+            {
+                <SnippetCard Snippet="snippet" OnPin="TogglePinAsync" />
+            }
+        </div>
+    </section>
+}
+else if (!loading && loadError is null && !searching && snippets.Count > 0)
+{
+    <EmptyState IconName="search" Title="Search your snippets">
+        <p>Use the bar above — for example <span class="sz-mono">sort lang:csharp</span> — or open the library.</p>
+        <a class="sz-button" href="/snippets">Browse the library</a>
+    </EmptyState>
+}
+else if (!loading && loadError is null && !searching && snippets.Count == 0)
+{
+    <EmptyState IconName="code" Title="You currently don't have any snippets">
+        <p>Go to the editor and create one.</p>
+        <a class="sz-button sz-button-primary" href="/editor">New snippet</a>
+    </EmptyState>
+}

@@ -1,0 +1,77 @@
+@page "/editor"
+@page "/editor/{Id:int}"
+@attribute [Authorize]
+
+<PageTitle>@(isEdit ? "Edit snippet" : "New snippet") — Snippetz</PageTitle>
+
+<div class="sz-page-header">
+    <h1>@(isEdit ? "Edit snippet" : "Add new snippet")</h1>
+    <p>Tags are separated with a comma. The language is added as a tag automatically.</p>
+</div>
+
+@if (loading)
+{
+    <p>Loading…</p>
+}
+else if (missing)
+{
+    <EmptyState IconName="alert" Title="That snippet isn't here">
+        <a href="/snippets">Back to the library</a>
+    </EmptyState>
+}
+else
+{
+    <EditForm Model="form" OnValidSubmit="SaveAsync">
+        <DataAnnotationsValidator />
+        <div class="sz-split">
+            <div>
+                <div class="sz-field">
+                    <label for="title">Title</label>
+                    <InputText id="title" class="sz-input" @bind-Value="form.Title" placeholder="Recursively copy all files" />
+                    <ValidationMessage For="() => form.Title" class="sz-validation" />
+                </div>
+                <div class="sz-field">
+                    <label for="description">Description</label>
+                    <InputText id="description" class="sz-input" @bind-Value="form.Description" placeholder="What this snippet is for" />
+                </div>
+                <div class="sz-field">
+                    <label for="language">Language</label>
+                    <InputText id="language" class="sz-input" @bind-Value="form.Language" placeholder="python" list="languages" />
+                    <datalist id="languages">
+                        @foreach (string language in Constants.Languages)
+                        {
+                            <option value="@language"></option>
+                        }
+                    </datalist>
+                    <ValidationMessage For="() => form.Language" class="sz-validation" />
+                </div>
+                <div class="sz-field">
+                    <label for="tags">Tags</label>
+                    <InputText id="tags" class="sz-input" @bind-Value="form.Tags" placeholder="automation, files, loop" />
+                    <span class="sz-hint">Comma-separated. The language tag is added for you.</span>
+                </div>
+            </div>
+            <div class="sz-actions" style="position: sticky; top: 0.5rem;">
+                <button type="submit" class="sz-button sz-button-primary sz-button-block" disabled="@saving">
+                    @(saving ? "Saving…" : isEdit ? "Save changes" : "Create snippet")
+                </button>
+                <a class="sz-button sz-button-block" href="@(isEdit ? $"/snippet/{Id}" : "/snippets")">Cancel</a>
+                @if (!string.IsNullOrWhiteSpace(error))
+                {
+                    <p class="sz-validation">@error</p>
+                }
+            </div>
+        </div>
+
+        <div class="sz-field">
+            <label for="code">Code</label>
+            <InputTextArea id="code" class="sz-textarea" @bind-Value="form.Code" placeholder="cp -r ./src ./dest" />
+            <ValidationMessage For="() => form.Code" class="sz-validation" />
+        </div>
+        <div class="sz-field">
+            <label for="docs">Documentation</label>
+            <InputTextArea id="docs" class="sz-textarea sz-textarea-docs" @bind-Value="form.Docs" placeholder="Notes in Markdown" />
+            <span class="sz-hint">Markdown. Shown under the code when the snippet is opened.</span>
+        </div>
+    </EditForm>
+}

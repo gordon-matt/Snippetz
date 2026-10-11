@@ -1,0 +1,45 @@
+@page "/snippets"
+@attribute [Authorize]
+
+<PageTitle>Library — Snippetz</PageTitle>
+
+<div class="sz-page-header">
+    <h1>Library</h1>
+    @if (snippets.Count > 0)
+    {
+        <p>@visible.Count of @snippets.Count @(activeTag is null ? "snippets" : $"snippets tagged {activeTag}").</p>
+    }
+</div>
+
+@if (loading)
+{
+    <p>Loading…</p>
+}
+else if (loadError is not null)
+{
+    <EmptyState IconName="alert" Title="The library could not be read">
+        @loadError
+    </EmptyState>
+}
+else if (snippets.Count == 0)
+{
+    <EmptyState IconName="code" Title="You currently don't have any snippets">
+        <p>Go to the editor and create one.</p>
+        <a class="sz-button sz-button-primary" href="/editor">New snippet</a>
+    </EmptyState>
+}
+else if (visible.Count == 0)
+{
+    <EmptyState IconName="search" Title="Nothing with that tag">
+        <a href="/snippets">Clear the filter</a>
+    </EmptyState>
+}
+else
+{
+    <div class="sz-grid">
+        @foreach (var snippet in visible)
+        {
+            <SnippetCard Snippet="snippet" OnPin="TogglePinAsync" />
+        }
+    </div>
+}

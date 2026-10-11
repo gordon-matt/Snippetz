@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<RequiresAspNetWebAssets>true</RequiresAspNetWebAssets>
+		<BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<Version>1.0.0</Version>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Ardalis.Result" Version="10.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.12" />
+		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.12" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.12" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.12" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.12">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="3.0.71" />
+		<PackageReference Include="LogVue" Version="1.0.0" />
+		<PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Snippetz.Core\Snippetz.Core.csproj" />
+		<ProjectReference Include="..\Snippetz.Data\Snippetz.Data.csproj" />
+		<ProjectReference Include="..\Snippetz.Data.MySql\Snippetz.Data.MySql.csproj" />
+		<ProjectReference Include="..\Snippetz.Data.Npgsql\Snippetz.Data.Npgsql.csproj" />
+		<ProjectReference Include="..\Snippetz.Data.Sql\Snippetz.Data.Sql.csproj" />
+		<ProjectReference Include="..\Snippetz.Data.Sqlite\Snippetz.Data.Sqlite.csproj" />
+		<ProjectReference Include="..\Snippetz.Models\Snippetz.Models.csproj" />
+		<ProjectReference Include="..\Snippetz.Services\Snippetz.Services.csproj" />
+	</ItemGroup>
+
+</Project>

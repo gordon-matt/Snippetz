@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="Snippetz.Core/Snippetz.Core.csproj" />
+  <Project Path="Snippetz.Data.MySql/Snippetz.Data.MySql.csproj" />
+  <Project Path="Snippetz.Data.Npgsql/Snippetz.Data.Npgsql.csproj" />
+  <Project Path="Snippetz.Data.Sql/Snippetz.Data.Sql.csproj" />
+  <Project Path="Snippetz.Data.Sqlite/Snippetz.Data.Sqlite.csproj" />
+  <Project Path="Snippetz.Data/Snippetz.Data.csproj" />
+  <Project Path="Snippetz.Models/Snippetz.Models.csproj" />
+  <Project Path="Snippetz.Services/Snippetz.Services.csproj" />
+  <Project Path="Snippetz/Snippetz.csproj" />
+</Solution>

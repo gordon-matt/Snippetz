@@ -1,0 +1,20 @@
+<article class="sz-card">
+    <h3 class="sz-card-title">
+        <a href="@($"/snippet/{Snippet.Id}")">@Snippet.Title</a>
+        <button type="button"
+                class="sz-icon-button @(Snippet.IsPinned ? "is-pinned" : null)"
+                title="@(Snippet.IsPinned ? "Unpin" : "Pin")"
+                @onclick="PinAsync">
+            <Icon Name="@(Snippet.IsPinned ? "pin" : "pin-off")" />
+        </button>
+    </h3>
+    <p>@(string.IsNullOrWhiteSpace(Snippet.Description) ? "No description" : Snippet.Description)</p>
+    <div class="sz-card-meta">
+        <span class="sz-badge @SnippetFormat.BadgeClass(Snippet.Language)">@Snippet.Language</span>
+        <span>@SnippetFormat.Relative(Snippet.CreatedAt)</span>
+        <span class="sz-card-actions">
+            <a class="sz-link-button" href="@($"/snippet/{Snippet.Id}")">View</a>
+            <button type="button" class="sz-link-button" @onclick="CopyAsync">Copy</button>
+        </span>
+    </div>
+</article>
