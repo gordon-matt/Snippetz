@@ -5,7 +5,18 @@
 <PageTitle>@(isEdit ? "Edit snippet" : "New snippet") — Snippetz</PageTitle>
 
 <div class="sz-page-header">
-    <h1>@(isEdit ? "Edit snippet" : "Add new snippet")</h1>
+    <div class="sz-page-header-bar">
+        <h1>@(isEdit ? "Edit snippet" : "Add new snippet")</h1>
+        @if (!loading && !missing)
+        {
+            <div class="sz-header-actions">
+                <button type="submit" form="snippet-form" class="sz-button sz-button-primary" disabled="@saving">
+                    @(saving ? "Saving…" : isEdit ? "Save changes" : "Create snippet")
+                </button>
+                <a class="sz-button" href="@(isEdit ? $"/snippet/{Id}" : "/")">Cancel</a>
+            </div>
+        }
+    </div>
     <p>Tags are separated with a comma. The language is added as a tag automatically.</p>
 </div>
 
@@ -21,46 +32,36 @@ else if (missing)
 }
 else
 {
-    <EditForm Model="form" OnValidSubmit="SaveAsync">
+    <EditForm id="snippet-form" Model="form" OnValidSubmit="SaveAsync">
         <DataAnnotationsValidator />
-        <div class="sz-split">
-            <div>
-                <div class="sz-field">
-                    <label for="title">Title</label>
-                    <InputText id="title" class="sz-input" @bind-Value="form.Title" placeholder="Recursively copy all files" />
-                    <ValidationMessage For="() => form.Title" class="sz-validation" />
-                </div>
-                <div class="sz-field">
-                    <label for="description">Description</label>
-                    <InputText id="description" class="sz-input" @bind-Value="form.Description" placeholder="What this snippet is for" />
-                </div>
-                <div class="sz-field">
-                    <label for="language">Language</label>
-                    <InputText id="language" class="sz-input" @bind-Value="form.Language" placeholder="python" list="languages" />
-                    <datalist id="languages">
-                        @foreach (string language in Constants.Languages)
-                        {
-                            <option value="@language"></option>
-                        }
-                    </datalist>
-                    <ValidationMessage For="() => form.Language" class="sz-validation" />
-                </div>
-                <div class="sz-field">
-                    <label for="tags">Tags</label>
-                    <InputText id="tags" class="sz-input" @bind-Value="form.Tags" placeholder="automation, files, loop" />
-                    <span class="sz-hint">Comma-separated. The language tag is added for you.</span>
-                </div>
-            </div>
-            <div class="sz-actions" style="position: sticky; top: 0.5rem;">
-                <button type="submit" class="sz-button sz-button-primary sz-button-block" disabled="@saving">
-                    @(saving ? "Saving…" : isEdit ? "Save changes" : "Create snippet")
-                </button>
-                <a class="sz-button sz-button-block" href="@(isEdit ? $"/snippet/{Id}" : "/")">Cancel</a>
-                @if (!string.IsNullOrWhiteSpace(error))
+        @if (!string.IsNullOrWhiteSpace(error))
+        {
+            <p class="sz-validation">@error</p>
+        }
+        <div class="sz-field">
+            <label for="title">Title</label>
+            <InputText id="title" class="sz-input" @bind-Value="form.Title" placeholder="Recursively copy all files" />
+            <ValidationMessage For="() => form.Title" class="sz-validation" />
+        </div>
+        <div class="sz-field">
+            <label for="description">Description</label>
+            <InputText id="description" class="sz-input" @bind-Value="form.Description" placeholder="What this snippet is for" />
+        </div>
+        <div class="sz-field">
+            <label for="language">Language</label>
+            <InputText id="language" class="sz-input" @bind-Value="form.Language" placeholder="python" list="languages" />
+            <datalist id="languages">
+                @foreach (string language in Constants.Languages)
                 {
-                    <p class="sz-validation">@error</p>
+                    <option value="@language"></option>
                 }
-            </div>
+            </datalist>
+            <ValidationMessage For="() => form.Language" class="sz-validation" />
+        </div>
+        <div class="sz-field">
+            <label for="tags">Tags</label>
+            <InputText id="tags" class="sz-input" @bind-Value="form.Tags" placeholder="automation, files, loop" />
+            <span class="sz-hint">Comma-separated. The language tag is added for you.</span>
         </div>
 
         <div class="sz-field">
