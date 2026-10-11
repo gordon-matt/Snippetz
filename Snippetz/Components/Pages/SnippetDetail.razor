@@ -11,7 +11,7 @@ else if (snippet is null)
 {
     <EmptyState IconName="alert" Title="That snippet isn't here">
         <p>It may have been deleted, or it belongs to someone else.</p>
-        <a class="sz-button" href="/snippets">Back to the library</a>
+        <a class="sz-button" href="/">Back to your snippets</a>
     </EmptyState>
 }
 else
@@ -42,7 +42,7 @@ else
                 <div class="sz-chip-row">
                     @foreach (var tag in snippet.Tags)
                     {
-                        <a class="sz-badge sz-badge-5" href="@($"/snippets?tag={Uri.EscapeDataString(tag)}")">@tag</a>
+                        <a class="sz-badge sz-badge-5" href="@($"/?tag={Uri.EscapeDataString(tag)}")">@tag</a>
                     }
                 </div>
                 <ul class="sz-meta-list">

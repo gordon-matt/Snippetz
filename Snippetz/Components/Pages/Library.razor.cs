@@ -2,13 +2,10 @@ using Microsoft.AspNetCore.Components;
 
 namespace Snippetz.Components.Pages;
 
-public partial class Library : IDisposable
+public partial class Library
 {
     [Inject]
     private ISnippetService Snippets { get; set; } = default!;
-
-    [Inject]
-    private SidebarState Sidebar { get; set; } = default!;
 
     [Inject]
     private ToastService Toasts { get; set; } = default!;
@@ -16,21 +13,26 @@ public partial class Library : IDisposable
     [SupplyParameterFromQuery(Name = "tag")]
     public string? Tag { get; set; }
 
+    [SupplyParameterFromQuery(Name = "q")]
+    public string? Query { get; set; }
+
     private bool loading = true;
+    private bool searching;
     private string? loadError;
+    private string? activeTag;
     private List<SnippetDto> snippets = [];
     private List<SnippetDto> visible = [];
-    private string? activeTag;
+    private List<SnippetDto> results = [];
 
     protected override async Task OnParametersSetAsync()
     {
         activeTag = string.IsNullOrWhiteSpace(Tag) ? null : Tag.Trim().ToLowerInvariant();
+        searching = !string.IsNullOrWhiteSpace(Query);
 
         if (snippets.Count == 0 && loadError is null)
         {
             loading = true;
             var listed = await Snippets.ListAsync();
-            var counts = await Snippets.GetTagCountsAsync();
 
             if (!listed.IsSuccess)
             {
@@ -40,17 +42,29 @@ public partial class Library : IDisposable
             }
 
             snippets = [.. listed.Value];
-            var tags = counts.IsSuccess ? counts.Value : [];
-            Sidebar.SetLibrary(snippets.Count, tags, activeTag);
+            loadError = null;
+        }
+
+        if (searching)
+        {
+            var found = await Snippets.SearchAsync(SearchQueryParser.Parse(Query));
+            if (!found.IsSuccess)
+            {
+                Toasts.Error(found.GetDisplayMessage());
+                results = [];
+            }
+            else
+            {
+                results = [.. found.Value];
+            }
         }
         else
         {
-            Sidebar.SetActiveTag(activeTag);
+            results = [];
+            visible = activeTag is null
+                ? snippets
+                : [.. snippets.Where(snippet => snippet.Tags.Contains(activeTag, StringComparer.OrdinalIgnoreCase))];
         }
-
-        visible = activeTag is null
-            ? snippets
-            : [.. snippets.Where(snippet => snippet.Tags.Contains(activeTag, StringComparer.OrdinalIgnoreCase))];
 
         loading = false;
     }
@@ -64,16 +78,19 @@ public partial class Library : IDisposable
             return;
         }
 
-        int index = snippets.FindIndex(item => item.Id == updated.Value.Id);
-        if (index >= 0)
-        {
-            snippets[index] = updated.Value;
-        }
-
+        Replace(snippets, updated.Value);
+        Replace(results, updated.Value);
         visible = activeTag is null
             ? snippets
             : [.. snippets.Where(item => item.Tags.Contains(activeTag, StringComparer.OrdinalIgnoreCase))];
     }
 
-    public void Dispose() => Sidebar.Clear();
+    private static void Replace(List<SnippetDto> list, SnippetDto updated)
+    {
+        int index = list.FindIndex(item => item.Id == updated.Id);
+        if (index >= 0)
+        {
+            list[index] = updated;
+        }
+    }
 }

@@ -1,11 +1,16 @@
+@page "/"
 @page "/snippets"
 @attribute [Authorize]
 
-<PageTitle>Library — Snippetz</PageTitle>
+<PageTitle>@(searching ? "Search" : "Snippets") — Snippetz</PageTitle>
 
 <div class="sz-page-header">
-    <h1>Library</h1>
-    @if (snippets.Count > 0)
+    <h1>@(searching ? "Results" : "Snippets")</h1>
+    @if (searching)
+    {
+        <p>@results.Count @(results.Count == 1 ? "match" : "matches") for <span class="sz-mono">@Query</span>.</p>
+    }
+    else if (snippets.Count > 0)
     {
         <p>@visible.Count of @snippets.Count @(activeTag is null ? "snippets" : $"snippets tagged {activeTag}").</p>
     }
@@ -17,27 +22,34 @@
 }
 else if (loadError is not null)
 {
-    <EmptyState IconName="alert" Title="The library could not be read">
+    <EmptyState IconName="alert" Title="The snippets could not be read">
         @loadError
     </EmptyState>
 }
-else if (snippets.Count == 0)
+else if (searching && results.Count == 0)
+{
+    <EmptyState IconName="search" Title="Nothing matches">
+        <p>Try a shorter query, or drop the <span class="sz-mono">lang:</span> and <span class="sz-mono">tags:</span> filters.</p>
+        <a class="sz-button" href="/">Clear search</a>
+    </EmptyState>
+}
+else if (!searching && snippets.Count == 0)
 {
     <EmptyState IconName="code" Title="You currently don't have any snippets">
-        <p>Go to the editor and create one.</p>
+        <p>Use New to create one.</p>
         <a class="sz-button sz-button-primary" href="/editor">New snippet</a>
     </EmptyState>
 }
-else if (visible.Count == 0)
+else if (!searching && visible.Count == 0)
 {
     <EmptyState IconName="search" Title="Nothing with that tag">
-        <a href="/snippets">Clear the filter</a>
+        <a href="/">Show all snippets</a>
     </EmptyState>
 }
 else
 {
     <div class="sz-grid">
-        @foreach (var snippet in visible)
+        @foreach (var snippet in (searching ? results : visible))
         {
             <SnippetCard Snippet="snippet" OnPin="TogglePinAsync" />
         }

@@ -24,6 +24,20 @@ public sealed class SnippetService(
         return Result<IReadOnlyList<SnippetDto>>.Success(await WithTagsAsync(page, cancellationToken));
     }
 
+    public async Task<Result<int>> CountAsync(CancellationToken cancellationToken = default)
+    {
+        if (ResolveOwner() is not string ownerUserId)
+        {
+            return Result<int>.Forbidden();
+        }
+
+        int count = await snippets.CountAsync(
+            snippet => snippet.OwnerUserId == ownerUserId,
+            new ContextOptions { CancellationToken = cancellationToken });
+
+        return Result<int>.Success(count);
+    }
+
     public async Task<Result<SnippetDto>> GetAsync(int id, CancellationToken cancellationToken = default)
     {
         var found = await FindOwnedAsync(id, cancellationToken);

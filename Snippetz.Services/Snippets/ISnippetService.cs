@@ -4,6 +4,8 @@ public interface ISnippetService
 {
     Task<Result<IReadOnlyList<SnippetDto>>> ListAsync(CancellationToken cancellationToken = default);
 
+    Task<Result<int>> CountAsync(CancellationToken cancellationToken = default);
+
     Task<Result<SnippetDto>> GetAsync(int id, CancellationToken cancellationToken = default);
 
     Task<Result<string>> GetRawCodeAsync(int id, CancellationToken cancellationToken = default);

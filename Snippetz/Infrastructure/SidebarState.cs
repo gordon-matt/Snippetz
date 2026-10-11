@@ -1,6 +1,6 @@
 namespace Snippetz.Infrastructure;
 
-/// <summary>Tag counts the library page publishes for the sidebar to render.</summary>
+/// <summary>Tag counts shown in the sidebar on every page.</summary>
 public sealed class SidebarState
 {
     public IReadOnlyList<TagCountDto> Tags { get; private set; } = [];
@@ -9,27 +9,20 @@ public sealed class SidebarState
 
     public int SnippetCount { get; private set; }
 
+    /// <summary>True when the snippet list is showing everything, with no tag or search filter.</summary>
+    public bool AllSelected { get; private set; }
+
+    public bool Loaded { get; private set; }
+
     public event Action? Changed;
 
-    public void SetLibrary(int snippetCount, IReadOnlyList<TagCountDto> tags, string? activeTag)
+    public void Set(int snippetCount, IReadOnlyList<TagCountDto> tags, string? activeTag, bool allSelected)
     {
         SnippetCount = snippetCount;
         Tags = tags;
         ActiveTag = activeTag;
-        Changed?.Invoke();
-    }
-
-    public void SetActiveTag(string? activeTag)
-    {
-        ActiveTag = activeTag;
-        Changed?.Invoke();
-    }
-
-    public void Clear()
-    {
-        Tags = [];
-        ActiveTag = null;
-        SnippetCount = 0;
+        AllSelected = allSelected;
+        Loaded = true;
         Changed?.Invoke();
     }
 }

@@ -16,7 +16,7 @@
 else if (missing)
 {
     <EmptyState IconName="alert" Title="That snippet isn't here">
-        <a href="/snippets">Back to the library</a>
+        <a href="/">Back to your snippets</a>
     </EmptyState>
 }
 else
@@ -55,7 +55,7 @@ else
                 <button type="submit" class="sz-button sz-button-primary sz-button-block" disabled="@saving">
                     @(saving ? "Saving…" : isEdit ? "Save changes" : "Create snippet")
                 </button>
-                <a class="sz-button sz-button-block" href="@(isEdit ? $"/snippet/{Id}" : "/snippets")">Cancel</a>
+                <a class="sz-button sz-button-block" href="@(isEdit ? $"/snippet/{Id}" : "/")">Cancel</a>
                 @if (!string.IsNullOrWhiteSpace(error))
                 {
                     <p class="sz-validation">@error</p>

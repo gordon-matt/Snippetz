@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.JSInterop;
 
 namespace Snippetz.Components.Layout;
@@ -21,7 +23,11 @@ public partial class MainLayout : IDisposable
     [Inject]
     private IAuthProviderService Auth { get; set; } = default!;
 
+    [Inject]
+    private ISnippetService Snippets { get; set; } = default!;
+
     private bool sidebarOpen;
+    private int sidebarRefresh;
     private string theme = "light";
     private string searchText = string.Empty;
     private string userName = string.Empty;
@@ -41,6 +47,9 @@ public partial class MainLayout : IDisposable
     protected override async Task OnInitializedAsync()
     {
         Sidebar.Changed += OnSidebarChanged;
+        Navigation.LocationChanged += OnLocationChanged;
+        await RefreshSidebarAsync();
+
         var state = await AuthState.GetAuthenticationStateAsync();
         userName = state.User.Identity?.Name ?? string.Empty;
         isAdmin = state.User.IsInRole(Constants.Roles.Administrator);
@@ -72,5 +81,36 @@ public partial class MainLayout : IDisposable
         Navigation.NavigateTo(query.Length == 0 ? "/" : $"/?q={Uri.EscapeDataString(query)}");
     }
 
-    public void Dispose() => Sidebar.Changed -= OnSidebarChanged;
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e) =>
+        _ = InvokeAsync(RefreshSidebarAsync);
+
+    private async Task RefreshSidebarAsync()
+    {
+        int version = ++sidebarRefresh;
+        var count = await Snippets.CountAsync();
+        var tags = await Snippets.GetTagCountsAsync();
+
+        if (version != sidebarRefresh)
+        {
+            return;
+        }
+
+        var query = QueryHelpers.ParseQuery(Navigation.ToAbsoluteUri(Navigation.Uri).Query);
+        string path = Navigation.ToBaseRelativePath(Navigation.Uri).Split('?', '#')[0].Trim('/');
+        bool onList = path is "" or "snippets";
+        string? tag = onList && query.TryGetValue("tag", out var tagValue) ? tagValue.ToString() : null;
+        bool searching = onList && query.TryGetValue("q", out var q) && !string.IsNullOrWhiteSpace(q);
+
+        Sidebar.Set(
+            count.IsSuccess ? count.Value : 0,
+            tags.IsSuccess ? tags.Value : [],
+            string.IsNullOrWhiteSpace(tag) ? null : tag.Trim().ToLowerInvariant(),
+            onList && !searching && string.IsNullOrWhiteSpace(tag));
+    }
+
+    public void Dispose()
+    {
+        Sidebar.Changed -= OnSidebarChanged;
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
 }

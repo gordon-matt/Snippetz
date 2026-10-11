@@ -102,6 +102,6 @@ public partial class SnippetDetail
             return;
         }
 
-        Navigation.NavigateTo("/snippets");
+        Navigation.NavigateTo("/");
     }
 }
