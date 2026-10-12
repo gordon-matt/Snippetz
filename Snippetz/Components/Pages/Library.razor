@@ -4,18 +4,6 @@
 
 <PageTitle>@(searching ? "Search" : "Snippets") — Snippetz</PageTitle>
 
-<div class="sz-page-header">
-    <h1>@(searching ? "Results" : "Snippets")</h1>
-    @if (searching)
-    {
-        <p>@results.Count @(results.Count == 1 ? "match" : "matches") for <span class="sz-mono">@Query</span>.</p>
-    }
-    else if (snippets.Count > 0)
-    {
-        <p>@visible.Count of @snippets.Count @(activeTag is null ? "snippets" : $"snippets tagged {activeTag}").</p>
-    }
-</div>
-
 @if (loading)
 {
     <p>Loading…</p>

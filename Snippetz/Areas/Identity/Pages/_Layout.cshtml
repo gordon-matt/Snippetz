@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - @siteName</title>
-    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" />
+    <link rel="icon" type="image/png" href="~/img/Icon.png" />
     <link id="hljs-theme" rel="stylesheet" href="~/lib/highlight.js/styles/github.min.css" />
     <link rel="stylesheet" href="~/css/snippetz.css" />
     <script src="~/js/theme-init.js"></script>
@@ -16,8 +16,9 @@
     <div class="sz-auth-shell">
         <div class="sz-auth-card">
             <a class="sz-brand" href="/">
-                <img src="~/favicon.svg" alt="" width="22" height="22" />
-                <span>@siteName</span>
+                <img class="sz-brand-logo" src="~/img/Logo.png" alt="@siteName" />
+                <img class="sz-brand-mark" src="~/img/Icon.png" alt="" />
+                <span class="sz-brand-name">@siteName</span>
             </a>
             @RenderBody()
         </div>

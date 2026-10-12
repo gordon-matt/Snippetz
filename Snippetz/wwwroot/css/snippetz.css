@@ -98,6 +98,16 @@ code, pre, .sz-mono { font-family: var(--sz-mono); }
     flex: 0 0 auto;
 }
 .sz-brand:hover { text-decoration: none; }
+.sz-brand-logo { display: block; height: 34px; width: auto; }
+.sz-brand-mark { display: none; height: 28px; width: auto; }
+.sz-brand-name { display: none; }
+[data-theme="dark"] .sz-brand-logo { display: none; }
+[data-theme="dark"] .sz-brand-mark { display: block; }
+[data-theme="dark"] .sz-brand-name {
+    display: block;
+    font-size: 21px;
+    line-height: 1;
+}
 
 .sz-search {
     flex: 1 1 auto;
