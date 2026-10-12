@@ -1,4 +1,4 @@
-# Snippetz
+<img src="https://github.com/gordon-matt/Snippetz/blob/master/_Misc/Logo.png" alt="Logo" width="250" />
 
 Snippetz is a self-hosted place to keep code snippets. Each snippet has a title, description, language, code, and optional Markdown notes. You can pin one, tag it, and find it again from the header search or the tag list in the sidebar.
 
