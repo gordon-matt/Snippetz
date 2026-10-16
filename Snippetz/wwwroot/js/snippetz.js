@@ -1,16 +1,15 @@
 window.snippetz = {
-    setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        try { localStorage.setItem('snippetz.theme', theme); } catch (e) { }
+    // The highlight.js stylesheet follows the light/dark scheme. The component library owns the
+    // theme itself and raises 'nf:themechange' on document whenever it flips.
+    applyHighlightTheme() {
         var link = document.getElementById('hljs-theme');
-        if (link) {
-            link.href = theme === 'dark'
-                ? 'lib/highlight.js/styles/atom-one-dark.min.css'
-                : 'lib/highlight.js/styles/github.min.css';
+        if (!link) {
+            return;
         }
-    },
-    getTheme() {
-        return document.documentElement.getAttribute('data-theme') || 'light';
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        link.href = dark
+            ? 'lib/highlight.js/styles/atom-one-dark.min.css'
+            : 'lib/highlight.js/styles/github.min.css';
     },
     highlight(element) {
         if (!window.hljs) {
@@ -37,3 +36,6 @@ window.snippetz = {
         return Promise.resolve();
     }
 };
+
+window.snippetz.applyHighlightTheme();
+document.addEventListener('nf:themechange', window.snippetz.applyHighlightTheme);

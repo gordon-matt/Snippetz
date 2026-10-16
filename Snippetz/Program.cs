@@ -1,8 +1,8 @@
+using LogVue;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.HttpOverrides;
 using Serilog;
-using LogVue;
 using Snippetz.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,12 +20,10 @@ builder.Services.AddSerilog((services, configuration) => configuration
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddHubOptions(options =>
-    {
         // The circuit default is 32 KB. Code, notes and description travel in one message, so a
         // longer snippet was dropped and the editor validated as if the code box were empty.
         // The columns themselves are unbounded text; this is only the transport ceiling.
-        options.MaximumReceiveMessageSize = 32 * 1024 * 1024;
-    });
+        options.MaximumReceiveMessageSize = 32 * 1024 * 1024);
 
 builder.Services.Configure<HttpConnectionDispatcherOptions>(options =>
 {
@@ -44,11 +42,32 @@ builder.Services.AddHttpClient();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthorization();
 
-builder.Services.AddScoped<SidebarState>();
-builder.Services.AddScoped<ToastService>();
+builder.Services.AddNetForgeComponents(ui =>
+{
+    // The key the app has always used, so a stored light/dark choice survives the switch.
+    ui.ThemeStorageKey = Snippetz.Constants.ClientThemeLocalStorageKey;
+
+    // Before the first choice is stored the app followed the operating system.
+    ui.DefaultColorScheme = "system";
+    ui.AccentColor = "#4f46e5";
+    ui.AccentColorDark = "#818cf8";
+});
+
+builder.Services.Configure<ForgeShellOptions>(shell =>
+{
+    shell.Brand = "Snippetz";
+    shell.LogoUrl = "img/Logo.png";
+    shell.LogoDarkUrl = "img/Logo-Dark.png";
+    shell.MarkUrl = "img/Icon.png";
+    shell.SearchPlaceholder = "card lang:csharp tags:ui";
+});
+
 builder.Services.AddSingleton(TimeProvider.System);
 
-string databaseProvider = SnippetzConfiguration.ResolveDatabaseProvider(builder.Configuration);
+string databaseProvider = DatabaseProviders.Resolve(
+    builder.Configuration[DatabaseProviders.ConfigurationKey],
+    DatabaseProviders.Sqlite,
+    [.. DatabaseProviders.All]);
 
 builder.Services.AddSnippetzDatabase(builder.Configuration);
 builder.Services.AddSnippetzRepositories();
@@ -93,7 +112,7 @@ app.UseAuthorization();
 
 app.MapLogVue().RequireAuthorization(new AuthorizeAttribute
 {
-    Roles = Snippetz.Constants.Roles.Administrator
+    Roles = WellKnownRoles.Administrator
 });
 
 app.MapRazorComponents<App>()

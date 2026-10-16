@@ -1,0 +1,7 @@
+@page "/access-denied"
+@layout EmptyLayout
+@attribute [AllowAnonymous]
+
+@* Where the cookie handler sends a signed-in user who lacks a role. Named AccessDeniedPage because
+   the library component it wraps is called AccessDenied. *@
+<AccessDenied HomeLabel="Back to Snippetz" />

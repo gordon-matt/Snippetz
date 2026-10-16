@@ -2,31 +2,28 @@
 @page "/editor/{Id:int}"
 @attribute [Authorize]
 
-<PageTitle>@(isEdit ? "Edit snippet" : "New snippet") — Snippetz</PageTitle>
+<PageTitle>@(isEdit ? "Edit snippet" : "New snippet") - Snippetz</PageTitle>
 
-<div class="sz-page-header">
-    <div class="sz-page-header-bar">
-        <h1>@(isEdit ? "Edit snippet" : "Add new snippet")</h1>
+<PageHeader Title="@(isEdit ? "Edit snippet" : "Add new snippet")"
+            Description="Tags are separated with a comma. The language is added as a tag automatically.">
+    <Actions>
         @if (!loading && !missing)
         {
-            <div class="sz-header-actions">
-                <button type="submit" form="snippet-form" class="sz-button sz-button-primary" disabled="@saving">
-                    @(saving ? "Saving…" : isEdit ? "Save changes" : "Create snippet")
-                </button>
-                <a class="sz-button" href="@(isEdit ? $"/snippet/{Id}" : "/")">Cancel</a>
-            </div>
+            <button type="submit" form="snippet-form" class="nf-button nf-button-primary" disabled="@saving">
+                @(saving ? "Saving." : isEdit ? "Save changes" : "Create snippet")
+            </button>
+            <a class="nf-button" href="@(isEdit ? $"/snippet/{Id}" : "/")">Cancel</a>
         }
-    </div>
-    <p>Tags are separated with a comma. The language is added as a tag automatically.</p>
-</div>
+    </Actions>
+</PageHeader>
 
 @if (loading)
 {
-    <p>Loading…</p>
+    <p class="nf-muted">Loading.</p>
 }
 else if (missing)
 {
-    <EmptyState IconName="alert" Title="That snippet isn't here">
+    <EmptyState Icon="alert" Title="That snippet isn't here">
         <a href="/">Back to your snippets</a>
     </EmptyState>
 }
@@ -36,43 +33,43 @@ else
         <DataAnnotationsValidator />
         @if (!string.IsNullOrWhiteSpace(error))
         {
-            <p class="sz-validation">@error</p>
+            <p class="nf-validation">@error</p>
         }
-        <div class="sz-field">
+        <div class="nf-field">
             <label for="title">Title</label>
-            <InputText id="title" class="sz-input" @bind-Value="form.Title" placeholder="Recursively copy all files" />
-            <ValidationMessage For="() => form.Title" class="sz-validation" />
+            <InputText id="title" class="nf-input" @bind-Value="form.Title" placeholder="Recursively copy all files" />
+            <ValidationMessage For="() => form.Title" class="nf-validation" />
         </div>
-        <div class="sz-field">
+        <div class="nf-field">
             <label for="description">Description</label>
-            <InputText id="description" class="sz-input" @bind-Value="form.Description" placeholder="What this snippet is for" />
+            <InputText id="description" class="nf-input" @bind-Value="form.Description" placeholder="What this snippet is for" />
         </div>
-        <div class="sz-field">
+        <div class="nf-field">
             <label for="language">Language</label>
-            <InputText id="language" class="sz-input" @bind-Value="form.Language" placeholder="python" list="languages" />
+            <InputText id="language" class="nf-input" @bind-Value="form.Language" placeholder="python" list="languages" />
             <datalist id="languages">
                 @foreach (string language in Constants.Languages)
                 {
                     <option value="@language"></option>
                 }
             </datalist>
-            <ValidationMessage For="() => form.Language" class="sz-validation" />
+            <ValidationMessage For="() => form.Language" class="nf-validation" />
         </div>
-        <div class="sz-field">
+        <div class="nf-field">
             <label for="tags">Tags</label>
-            <InputText id="tags" class="sz-input" @bind-Value="form.Tags" placeholder="automation, files, loop" />
-            <span class="sz-hint">Comma-separated. The language tag is added for you.</span>
+            <InputText id="tags" class="nf-input" @bind-Value="form.Tags" placeholder="automation, files, loop" />
+            <span class="nf-hint">Comma-separated. The language tag is added for you.</span>
         </div>
 
-        <div class="sz-field">
+        <div class="nf-field">
             <label for="code">Code</label>
-            <InputTextArea id="code" class="sz-textarea" @bind-Value="form.Code" placeholder="cp -r ./src ./dest" />
-            <ValidationMessage For="() => form.Code" class="sz-validation" />
+            <InputTextArea id="code" class="nf-textarea nf-textarea-code" @bind-Value="form.Code" placeholder="cp -r ./src ./dest" />
+            <ValidationMessage For="() => form.Code" class="nf-validation" />
         </div>
-        <div class="sz-field">
+        <div class="nf-field">
             <label for="docs">Documentation</label>
-            <InputTextArea id="docs" class="sz-textarea sz-textarea-docs" @bind-Value="form.Docs" placeholder="Notes in Markdown" />
-            <span class="sz-hint">Markdown. Shown under the code when the snippet is opened.</span>
+            <InputTextArea id="docs" class="nf-textarea" @bind-Value="form.Docs" placeholder="Notes in Markdown" />
+            <span class="nf-hint">Markdown. Shown under the code when the snippet is opened.</span>
         </div>
     </EditForm>
 }

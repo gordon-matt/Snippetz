@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Snippetz.Components.Shared;
 
 namespace Snippetz.Components.Pages;
 
@@ -21,10 +20,15 @@ public partial class SnippetDetail
     [Inject]
     private ToastService Toasts { get; set; } = default!;
 
+    [Inject]
+    private DialogService Dialogs { get; set; } = default!;
+
+    [Inject]
+    private SidebarRefresh SidebarRefresh { get; set; } = default!;
+
     private SnippetDto? snippet;
     private bool loading = true;
     private string docsHtml = string.Empty;
-    private ConfirmDialog confirm = default!;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -53,7 +57,7 @@ public partial class SnippetDetail
         var updated = await Snippets.SetPinnedAsync(snippet.Id, !snippet.IsPinned);
         if (!updated.IsSuccess)
         {
-            Toasts.Error(updated.GetDisplayMessage());
+            Toasts.ShowFailure(updated);
             return;
         }
 
@@ -90,7 +94,7 @@ public partial class SnippetDetail
             return;
         }
 
-        if (!await confirm.ShowAsync("Delete snippet", "Are you sure you want to delete this snippet?"))
+        if (!await Dialogs.ConfirmAsync("Delete snippet", "Are you sure you want to delete this snippet?", "Delete", isDestructive: true))
         {
             return;
         }
@@ -98,10 +102,11 @@ public partial class SnippetDetail
         var deleted = await Snippets.DeleteAsync(snippet.Id);
         if (!deleted.IsSuccess)
         {
-            Toasts.Error(deleted.GetDisplayMessage());
+            Toasts.ShowFailure(deleted);
             return;
         }
 
+        SidebarRefresh.NotifyChanged();
         Navigation.NavigateTo("/");
     }
 }

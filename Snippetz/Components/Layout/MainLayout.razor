@@ -1,75 +1,151 @@
 @inherits LayoutComponentBase
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.Extensions.Options
+@implements IDisposable
+@inject IOptions<ForgeShellOptions> ShellOptions
+@inject NavigationManager Navigation
+@inject ISnippetService Snippets
+@inject SidebarRefresh SidebarRefresh
 
-<div class="sz-app @(sidebarOpen ? "sz-sidebar-open" : null)">
-    <header class="sz-topbar">
-        <button type="button" class="sz-icon-button sz-menu-button" aria-label="Toggle sidebar" @onclick="ToggleSidebar">
-            <Icon Name="menu" />
-        </button>
-        <a class="sz-brand" href="/">
-            <img class="sz-brand-logo" src="img/Logo.png" alt="Snippetz" />
-            <img class="sz-brand-mark" src="img/Icon.png" alt="" />
-            <span class="sz-brand-name">Snippetz</span>
-        </a>
-        <form class="sz-search" @onsubmit="SearchAsync" @onsubmit:preventDefault="true">
-            <Icon Name="search" />
-            <input @bind="searchText" @bind:event="oninput" placeholder="card lang:csharp tags:ui" aria-label="Search snippets" />
-            <kbd>/</kbd>
-        </form>
-        <div class="sz-topbar-actions">
-            <a class="sz-button sz-button-primary" href="/editor">
-                <Icon Name="plus" /> New
-            </a>
-            <button type="button" class="sz-icon-button" title="@(theme == "dark" ? "Light theme" : "Dark theme")" @onclick="ToggleThemeAsync">
-                <Icon Name="@(theme == "dark" ? "sun" : "moon")" />
-            </button>
-        </div>
-    </header>
+@*
+    The library's ShellLayout renders the sidebar from ForgeNavItem links, and a NavLink ignores the
+    query string when it decides whether it is active, so every "?tag=" link would light up at once.
+    This layout therefore hands AppShell its own sidebar: the same markup and nf- classes as
+    ForgeSidebar, with the tag links marked active from the URL.
+*@
+<AppShell Sidebar="SidebarContent"
+          ShowSearch="true"
+          SearchPlaceholder="@options.SearchPlaceholder"
+          OnSearch="SearchAsync">
+    @Body
+</AppShell>
 
-    <aside class="sz-sidebar">
-        @if (sidebar.Loaded)
-        {
-            <div>
-                <p class="sz-sidebar-heading">Filter by tag</p>
-                <a class="sz-tag-link @(sidebar.AllSelected ? "is-active" : null)" href="/">
-                    <span>All snippets</span>
-                    <span>@sidebar.SnippetCount</span>
+@code {
+    private ForgeShellOptions options = new();
+    private int? snippetCount;
+    private IReadOnlyList<TagCountDto> tags = [];
+    private int loadVersion;
+
+    private RenderFragment SidebarContent => __builder =>
+    {
+        var (activeTag, allSelected) = ResolveFilter();
+
+        <nav class="nf-sidebar" id="nf-sidebar" aria-label="Navigation">
+            <div class="nf-sidebar-brand">
+                <a href="@options.BrandHref" class="nf-brand-link">
+                    <img class="nf-brand-logo nf-has-dark" src="@options.LogoUrl" alt="@options.Brand" />
+                    <img class="nf-brand-logo-dark" src="@options.LogoDarkUrl" alt="@options.Brand" />
+                    <img class="nf-brand-mark" src="@options.MarkUrl" alt="" />
                 </a>
-                @foreach (var tag in sidebar.Tags)
-                {
-                    <a class="sz-tag-link @(tag.Name == sidebar.ActiveTag ? "is-active" : null)"
-                       href="@($"/?tag={Uri.EscapeDataString(tag.Name)}")">
-                        <span>@tag.Name</span>
-                        <span>@tag.Count</span>
-                    </a>
-                }
             </div>
+
+            <div class="nf-sidebar-scroll">
+                <ul class="nf-nav">
+                    <li class="nf-nav-item">
+                        <NavLink class="nf-nav-link" ActiveClass="active" href="/editor" Match="NavLinkMatch.Prefix" title="New snippet">
+                            <Icon Name="plus" />
+                            <span class="nf-nav-label">New snippet</span>
+                        </NavLink>
+                    </li>
+                </ul>
+
+                <p class="nf-sidebar-heading"><span>Filter by tag</span></p>
+                <ul class="nf-nav">
+                    <li class="nf-nav-item">
+                        <a class="nf-nav-link @(allSelected ? "is-active" : null)" href="/" title="All snippets">
+                            <Icon Name="library" />
+                            <span class="nf-nav-label">All snippets</span>
+                            @if (snippetCount is int count)
+                            {
+                                <span class="nf-nav-count">@count.ToString("N0")</span>
+                            }
+                        </a>
+                    </li>
+                    @foreach (var tag in tags)
+                    {
+                        <li class="nf-nav-item" @key="tag.Name">
+                            <a class="nf-nav-link @(tag.Name == activeTag ? "is-active" : null)"
+                               href="@($"/?tag={Uri.EscapeDataString(tag.Name)}")" title="@tag.Name">
+                                <Icon Name="circle" />
+                                <span class="nf-nav-label">@tag.Name</span>
+                                <span class="nf-nav-count">@tag.Count.ToString("N0")</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+                <AuthorizeView Roles="@WellKnownRoles.Administrator">
+                    <p class="nf-sidebar-heading"><span>Administration</span></p>
+                    <ul class="nf-nav">
+                        <li class="nf-nav-item">
+                            @* Outside the Blazor router, so it opens as a full navigation. *@
+                            <a class="nf-nav-link" href="/logvue" target="_blank" rel="noopener noreferrer" title="Logs">
+                                <Icon Name="logs" />
+                                <span class="nf-nav-label">Logs</span>
+                                <Icon Name="external" Size="14" Class="nf-nav-external" />
+                            </a>
+                        </li>
+                    </ul>
+                </AuthorizeView>
+            </div>
+        </nav>
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        options = ShellOptions.Value;
+        SidebarRefresh.Changed += OnSidebarChanged;
+        Navigation.LocationChanged += OnLocationChanged;
+        await LoadCountsAsync();
+    }
+
+    private async Task LoadCountsAsync()
+    {
+        int version = ++loadVersion;
+        var count = await Snippets.CountAsync();
+        var tagCounts = await Snippets.GetTagCountsAsync();
+
+        if (version != loadVersion)
+        {
+            return;
         }
 
-        <div class="sz-sidebar-footer">
-            <div class="sz-user">
-                <span>
-                    <strong>@userName</strong>
-                </span>
-                @if (isAdmin)
-                {
-                    <a href="/logvue">Logs</a>
-                }
-            </div>
-            @if (showSignOut)
-            {
-                <form method="post" action="/auth/logout">
-                    <AntiforgeryToken />
-                    <button type="submit" class="sz-button sz-button-block">
-                        <Icon Name="logout" /> Sign out
-                    </button>
-                </form>
-            }
-        </div>
-    </aside>
+        snippetCount = count.IsSuccess ? count.Value : null;
+        tags = tagCounts.IsSuccess ? tagCounts.Value : [];
+    }
 
-    <main class="sz-main">
-        @Body
-    </main>
-</div>
+    /// <summary>Which sidebar link the current URL selects: a tag, or "All snippets" when nothing filters the list.</summary>
+    private (string? ActiveTag, bool AllSelected) ResolveFilter()
+    {
+        var query = QueryHelpers.ParseQuery(Navigation.ToAbsoluteUri(Navigation.Uri).Query);
+        string path = Navigation.ToBaseRelativePath(Navigation.Uri).Split('?', '#')[0].Trim('/');
+        bool onList = path is "" or "snippets";
 
-<Toaster />
+        string? tag = onList && query.TryGetValue("tag", out var tagValue) && !string.IsNullOrWhiteSpace(tagValue)
+            ? tagValue.ToString().Trim().ToLowerInvariant()
+            : null;
+        bool searching = onList && query.TryGetValue("q", out var q) && !string.IsNullOrWhiteSpace(q);
+
+        return (tag, onList && tag is null && !searching);
+    }
+
+    private Task SearchAsync(string term)
+    {
+        Navigation.NavigateTo($"/?q={Uri.EscapeDataString(term)}");
+        return Task.CompletedTask;
+    }
+
+    private void OnSidebarChanged() => _ = InvokeAsync(async () =>
+    {
+        await LoadCountsAsync();
+        StateHasChanged();
+    });
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e) => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        SidebarRefresh.Changed -= OnSidebarChanged;
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+}

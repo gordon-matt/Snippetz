@@ -50,7 +50,7 @@ public partial class Library
             var found = await Snippets.SearchAsync(SearchQueryParser.Parse(Query));
             if (!found.IsSuccess)
             {
-                Toasts.Error(found.GetDisplayMessage());
+                Toasts.ShowFailure(found);
                 results = [];
             }
             else
@@ -74,7 +74,7 @@ public partial class Library
         var updated = await Snippets.SetPinnedAsync(snippet.Id, !snippet.IsPinned);
         if (!updated.IsSuccess)
         {
-            Toasts.Error(updated.GetDisplayMessage());
+            Toasts.ShowFailure(updated);
             return;
         }
 

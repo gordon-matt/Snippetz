@@ -15,13 +15,10 @@ public sealed class SnippetsController(ISnippetService snippets) : Controller
     {
         var result = await snippets.GetRawCodeAsync(id, cancellationToken);
 
-        if (!result.IsSuccess)
-        {
-            return result.Status == ResultStatus.NotFound
+        return !result.IsSuccess
+            ? result.Status == ResultStatus.NotFound
                 ? NotFound()
-                : StatusCode(StatusCodes.Status403Forbidden);
-        }
-
-        return Content(result.Value, "text/plain");
+                : StatusCode(StatusCodes.Status403Forbidden)
+            : Content(result.Value, "text/plain");
     }
 }

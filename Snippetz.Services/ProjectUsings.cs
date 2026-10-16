@@ -1,11 +1,8 @@
-global using System.Linq.Expressions;
 global using Ardalis.Result;
 global using Extenso.Data.Entity;
-global using LinqKit;
+global using Heroicsoft.NetForge.Abstractions.Auth;
+global using Heroicsoft.NetForge.Results;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.Logging;
-global using Snippetz;
-global using Snippetz.Data;
 global using Snippetz.Data.Entities;
 global using Snippetz.Models;
-global using Snippetz.Services.Auth;

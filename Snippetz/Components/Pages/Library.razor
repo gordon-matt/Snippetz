@@ -2,41 +2,39 @@
 @page "/snippets"
 @attribute [Authorize]
 
-<PageTitle>@(searching ? "Search" : "Snippets") — Snippetz</PageTitle>
+<PageTitle>@(searching ? "Search" : "Snippets") - Snippetz</PageTitle>
 
 @if (loading)
 {
-    <p>Loading…</p>
+    <p class="nf-muted">Loading.</p>
 }
 else if (loadError is not null)
 {
-    <EmptyState IconName="alert" Title="The snippets could not be read">
-        @loadError
-    </EmptyState>
+    <EmptyState Icon="alert" Title="The snippets could not be read" Description="@loadError" />
 }
 else if (searching && results.Count == 0)
 {
-    <EmptyState IconName="search" Title="Nothing matches">
-        <p>Try a shorter query, or drop the <span class="sz-mono">lang:</span> and <span class="sz-mono">tags:</span> filters.</p>
-        <a class="sz-button" href="/">Clear search</a>
+    <EmptyState Icon="search" Title="Nothing matches">
+        <p>Try a shorter query, or drop the <span class="nf-mono">lang:</span> and <span class="nf-mono">tags:</span> filters.</p>
+        <a class="nf-button" href="/">Clear search</a>
     </EmptyState>
 }
 else if (!searching && snippets.Count == 0)
 {
-    <EmptyState IconName="code" Title="You currently don't have any snippets">
-        <p>Use New to create one.</p>
-        <a class="sz-button sz-button-primary" href="/editor">New snippet</a>
+    <EmptyState Icon="code" Title="You currently don't have any snippets">
+        <p>Create your first one.</p>
+        <a class="nf-button nf-button-primary" href="/editor"><Icon Name="plus" /> New snippet</a>
     </EmptyState>
 }
 else if (!searching && visible.Count == 0)
 {
-    <EmptyState IconName="search" Title="Nothing with that tag">
+    <EmptyState Icon="search" Title="Nothing with that tag">
         <a href="/">Show all snippets</a>
     </EmptyState>
 }
 else
 {
-    <div class="sz-grid">
+    <div class="nf-grid">
         @foreach (var snippet in (searching ? results : visible))
         {
             <SnippetCard Snippet="snippet" OnPin="TogglePinAsync" />

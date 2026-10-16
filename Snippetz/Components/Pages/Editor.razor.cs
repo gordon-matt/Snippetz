@@ -17,6 +17,9 @@ public partial class Editor
     [Inject]
     private ToastService Toasts { get; set; } = default!;
 
+    [Inject]
+    private SidebarRefresh SidebarRefresh { get; set; } = default!;
+
     private readonly SnippetFormModel form = new();
     private bool loading;
     private bool missing;
@@ -84,6 +87,7 @@ public partial class Editor
         }
 
         Toasts.Success(isEdit ? "Snippet saved." : "Snippet created.");
+        SidebarRefresh.NotifyChanged();
         Navigation.NavigateTo($"/snippet/{result.Value.Id}");
     }
 

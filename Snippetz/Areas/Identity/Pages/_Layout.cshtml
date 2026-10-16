@@ -1,24 +1,38 @@
+@using Heroicsoft.NetForge.Components
+@using Microsoft.Extensions.Options
+@inject IOptions<ForgeUiOptions> UiOptions
+@*
+    Layout for the embedded ASP.NET Identity UI. These pages are plain Razor Pages rendered before
+    any Blazor circuit exists, so they take the library's stylesheet and theme-init.js directly
+    (the same files ForgeHostPage emits) and carry the visitor's stored light/dark choice across.
+*@
 @{
     string siteName = Constants.ServerSettingDefaults.SiteName;
+    var ui = UiOptions.Value;
+    string? accentCss = ForgeAccentCss.Build(ui);
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - @siteName</title>
+    <script src="~/_content/Heroicsoft.NetForge.Components/js/theme-init.js"
+            data-theme-key="@ui.ThemeStorageKey"
+            data-default-theme="@ui.DefaultColorScheme"></script>
+    <link rel="stylesheet" href="~/_content/Heroicsoft.NetForge.Components/css/nf.css" />
+    @if (accentCss is not null)
+    {
+        <style>@Html.Raw(accentCss)</style>
+    }
     <link rel="icon" type="image/png" href="~/img/Icon.png" />
-    <link id="hljs-theme" rel="stylesheet" href="~/lib/highlight.js/styles/github.min.css" />
-    <link rel="stylesheet" href="~/css/snippetz.css" />
-    <script src="~/js/theme-init.js"></script>
 </head>
 <body>
-    <div class="sz-auth-shell">
-        <div class="sz-auth-card">
-            <a class="sz-brand" href="/">
-                <img class="sz-brand-logo" src="~/img/Logo.png" alt="@siteName" />
-                <img class="sz-brand-mark" src="~/img/Icon.png" alt="" />
-                <span class="sz-brand-name">@siteName</span>
+    <div class="nf-standalone">
+        <div class="nf-auth-card">
+            <a class="nf-brand-link" href="/">
+                <img class="nf-brand-logo nf-has-dark" src="~/img/Logo.png" alt="@siteName" />
+                <img class="nf-brand-logo-dark" src="~/img/Logo-Dark.png" alt="@siteName" />
             </a>
             @RenderBody()
         </div>

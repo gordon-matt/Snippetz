@@ -1,15 +1,1 @@
-<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
-    <Found Context="routeData">
-        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
-            <NotAuthorized>
-                <RedirectToLogin />
-            </NotAuthorized>
-            <Authorizing>
-                <div class="sz-empty">
-                    <p>Checking your access…</p>
-                </div>
-            </Authorizing>
-        </AuthorizeRouteView>
-        <FocusOnNavigate RouteData="routeData" Selector="h1" />
-    </Found>
-</Router>
+<ForgeRouter AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)" DefaultLayout="typeof(Layout.MainLayout)" />

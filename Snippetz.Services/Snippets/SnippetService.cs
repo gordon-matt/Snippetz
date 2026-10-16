@@ -252,7 +252,7 @@ public sealed class SnippetService(
             return Result.Success();
         }
 
-        var errors = result.Errors?.ToArray() ?? [];
+        string[] errors = result.Errors?.ToArray() ?? [];
 
         return result.Status switch
         {

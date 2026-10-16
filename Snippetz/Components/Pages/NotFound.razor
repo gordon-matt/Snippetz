@@ -1,9 +1,5 @@
 @page "/not-found"
 @layout EmptyLayout
 
-<PageTitle>Not found — Snippetz</PageTitle>
-
-<EmptyState IconName="search" Title="That page isn't here">
-    <p>The link may be out of date, or the snippet it pointed at may have been removed.</p>
-    <a class="sz-button sz-button-primary" href="/">Back to Snippetz</a>
-</EmptyState>
+<NotFoundContent Message="The link may be out of date, or the snippet it pointed at may have been removed."
+                 HomeLabel="Back to Snippetz" />

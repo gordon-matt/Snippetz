@@ -24,11 +24,6 @@ public static partial class SearchQueryParser
     private static IReadOnlyList<string> Extract(string query, string filter)
     {
         var match = Regex.Match(query, filter + @":[a-zA-Z]+(,[a-zA-Z]+)*", RegexOptions.CultureInvariant);
-        if (!match.Success)
-        {
-            return [];
-        }
-
-        return match.Value.Split(':')[1].Split(',');
+        return !match.Success ? [] : (IReadOnlyList<string>)match.Value.Split(':')[1].Split(',');
     }
 }

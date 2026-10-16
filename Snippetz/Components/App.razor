@@ -1,25 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="/" />
-    <title>Snippetz</title>
-    <ResourcePreloader />
-    <link rel="icon" type="image/png" href="img/Icon.png" />
-    <link id="hljs-theme" rel="stylesheet" href="lib/highlight.js/styles/github.min.css" />
-    <link rel="stylesheet" href="@Assets["css/snippetz.css"]" />
-    <script src="@Assets["js/theme-init.js"]"></script>
-    <ImportMap />
-    <HeadOutlet @rendermode="InteractiveServer" />
-</head>
-
-<body>
-    <Routes @rendermode="InteractiveServer" />
-    <script src="lib/highlight.js/highlight.min.js"></script>
-    <script src="@Assets["js/snippetz.js"]"></script>
-    <script src="@Assets["_framework/blazor.web.js"]"></script>
-</body>
-
-</html>
+<ForgeHostPage Title="Snippetz" IconHref="img/Icon.png" AppStylesheet="@Assets["css/snippetz.css"]">
+    <AdditionalHead>
+        <link id="hljs-theme" rel="stylesheet" href="lib/highlight.js/styles/github.min.css" />
+        @* After the link above and after the library's theme-init.js, so the highlight theme matches the stored scheme before first paint. *@
+        <script src="@Assets["js/snippetz.js"]"></script>
+    </AdditionalHead>
+    <ChildContent>
+        <Routes @rendermode="InteractiveServer" />
+    </ChildContent>
+    <AdditionalBody>
+        <script src="lib/highlight.js/highlight.min.js"></script>
+    </AdditionalBody>
+</ForgeHostPage>
