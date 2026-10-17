@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.HttpOverrides;
 using Serilog;
+using Heroicsoft.NetForge.Components.Shell;
 using Snippetz.Components;
+using Snippetz.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +63,7 @@ builder.Services.Configure<ForgeShellOptions>(shell =>
     shell.MarkUrl = "img/Icon.png";
     shell.SearchPlaceholder = "card lang:csharp tags:ui";
 });
+builder.Services.AddScoped<IShellNavigation, SnippetNavigation>();
 
 builder.Services.AddSingleton(TimeProvider.System);
 
