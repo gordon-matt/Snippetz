@@ -34,10 +34,10 @@ else if (!searching && visible.Count == 0)
 }
 else
 {
-    <div class="nf-grid">
+    <CardGrid>
         @foreach (var snippet in (searching ? results : visible))
         {
             <SnippetCard Snippet="snippet" OnPin="TogglePinAsync" />
         }
-    </div>
+    </CardGrid>
 }

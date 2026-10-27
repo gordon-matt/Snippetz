@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.HttpOverrides;
 using Serilog;
-using Heroicsoft.NetForge.Components.Shell;
 using Snippetz.Components;
-using Snippetz.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 

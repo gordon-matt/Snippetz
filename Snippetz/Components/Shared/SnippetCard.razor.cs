@@ -24,4 +24,6 @@ public partial class SnippetCard
         await Js.InvokeVoidAsync("snippetz.copy", Snippet.Code);
         Toasts.Success("Code copied.");
     }
+
+    private string CardDescription => string.IsNullOrWhiteSpace(Snippet.Description) ? "No description" : Snippet.Description;
 }

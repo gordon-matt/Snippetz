@@ -35,17 +35,14 @@ else
         {
             <p class="nf-validation">@error</p>
         }
-        <div class="nf-field">
-            <label for="title">Title</label>
+        <Field Label="Title" For="title">
             <InputText id="title" class="nf-input" @bind-Value="form.Title" placeholder="Recursively copy all files" />
             <ValidationMessage For="() => form.Title" class="nf-validation" />
-        </div>
-        <div class="nf-field">
-            <label for="description">Description</label>
+        </Field>
+        <Field Label="Description" For="description">
             <InputText id="description" class="nf-input" @bind-Value="form.Description" placeholder="What this snippet is for" />
-        </div>
-        <div class="nf-field">
-            <label for="language">Language</label>
+        </Field>
+        <Field Label="Language" For="language">
             <InputText id="language" class="nf-input" @bind-Value="form.Language" placeholder="python" list="languages" />
             <datalist id="languages">
                 @foreach (string language in Constants.Languages)
@@ -54,22 +51,19 @@ else
                 }
             </datalist>
             <ValidationMessage For="() => form.Language" class="nf-validation" />
-        </div>
-        <div class="nf-field">
-            <label for="tags">Tags</label>
+        </Field>
+        <Field Label="Tags" For="tags">
             <InputText id="tags" class="nf-input" @bind-Value="form.Tags" placeholder="automation, files, loop" />
             <span class="nf-hint">Comma-separated. The language tag is added for you.</span>
-        </div>
+        </Field>
 
-        <div class="nf-field">
-            <label for="code">Code</label>
+        <Field Label="Code" For="code">
             <InputTextArea id="code" class="nf-textarea nf-textarea-code" @bind-Value="form.Code" placeholder="cp -r ./src ./dest" />
             <ValidationMessage For="() => form.Code" class="nf-validation" />
-        </div>
-        <div class="nf-field">
-            <label for="docs">Documentation</label>
+        </Field>
+        <Field Label="Documentation" For="docs">
             <InputTextArea id="docs" class="nf-textarea" @bind-Value="form.Docs" placeholder="Notes in Markdown" />
             <span class="nf-hint">Markdown. Shown under the code when the snippet is opened.</span>
-        </div>
+        </Field>
     </EditForm>
 }

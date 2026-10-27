@@ -1,20 +1,18 @@
-<article class="nf-card">
-    <h3 class="nf-card-title">
-        <a href="@($"/snippet/{Snippet.Id}")">@Snippet.Title</a>
+<Card Href="@($"/snippet/{Snippet.Id}")" Title="@Snippet.Title" Description="@CardDescription">
+    <TitleEnd>
         <button type="button"
                 class="nf-icon-button @(Snippet.IsPinned ? "is-active" : null)"
                 title="@(Snippet.IsPinned ? "Unpin" : "Pin")"
                 @onclick="PinAsync">
             <Icon Name="@(Snippet.IsPinned ? "pin" : "pin-off")" />
         </button>
-    </h3>
-    <p>@(string.IsNullOrWhiteSpace(Snippet.Description) ? "No description" : Snippet.Description)</p>
-    <div class="nf-card-meta">
+    </TitleEnd>
+    <Meta>
         <span class="nf-badge @SnippetFormat.BadgeClass(Snippet.Language)">@Snippet.Language</span>
         <span>@SnippetFormat.Relative(Snippet.CreatedAt)</span>
-        <span class="nf-card-actions">
-            <a class="nf-link-button" href="@($"/snippet/{Snippet.Id}")">View</a>
-            <button type="button" class="nf-link-button" @onclick="CopyAsync">Copy</button>
-        </span>
-    </div>
-</article>
+    </Meta>
+    <Actions>
+        <a class="nf-link-button" href="@($"/snippet/{Snippet.Id}")">View</a>
+        <button type="button" class="nf-link-button" @onclick="CopyAsync">Copy</button>
+    </Actions>
+</Card>
