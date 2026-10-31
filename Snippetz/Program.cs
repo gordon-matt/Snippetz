@@ -1,3 +1,4 @@
+using Heroicsoft.NetForge.Components.Navigation;
 using LogVue;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Connections;
@@ -51,6 +52,7 @@ builder.Services.AddNetForgeComponents(ui =>
     ui.DefaultColorScheme = "system";
     ui.AccentColor = "#4f46e5";
     ui.AccentColorDark = "#818cf8";
+    ui.ActiveSharedMenuPlacement = NetForgeMenuPlacement.Sidebar;
 });
 
 builder.Services.Configure<ForgeShellOptions>(shell =>
@@ -59,9 +61,27 @@ builder.Services.Configure<ForgeShellOptions>(shell =>
     shell.LogoUrl = "img/Logo.png";
     shell.LogoDarkUrl = "img/Logo-Dark.png";
     shell.MarkUrl = "img/Icon.png";
+    shell.UseSharedMenu = true;
+    shell.SharedMenuName = "Admin";
     shell.SearchPlaceholder = "card lang:csharp tags:ui";
 });
-builder.Services.AddScoped<IShellNavigation, SnippetNavigation>();
+builder.Services.BuildMenu("Admin", menu =>
+{
+    menu.AddItems()
+        .AsTopbar()
+        .AddCustom(item =>
+        {
+            item.Title = "Home";
+            item.Icon = "library";
+            item.Url = "/";
+            item.MatchAll = true;
+        });
+
+    menu.AddItems(group => group.Roles = WellKnownRoles.Administrator)
+        .AsTopbar()
+        .AddLogVue(options => options.Title = "Logs");
+});
+builder.Services.AddScoped<IShellNavigation, SnippetzNavigation>();
 
 builder.Services.AddSingleton(TimeProvider.System);
 

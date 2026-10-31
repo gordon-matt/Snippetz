@@ -6,7 +6,7 @@ namespace Snippetz.Infrastructure;
 /// Sidebar for the snippet library: a new-snippet link, one row per tag, and the log viewer.
 /// Tag rows match the query string, so only the tag in the address is highlighted.
 /// </summary>
-public sealed class SnippetNavigation(ISnippetService snippets) : IShellNavigation
+public sealed class SnippetzNavigation(ISnippetService snippets) : IShellNavigation
 {
     private static readonly string[] ListPaths = ["/", "/snippets"];
 
@@ -55,22 +55,6 @@ public sealed class SnippetNavigation(ISnippetService snippets) : IShellNavigati
             {
                 Heading = "Filter by tag",
                 Items = filters,
-            },
-            new ForgeNavSection
-            {
-                Heading = "Administration",
-                Roles = WellKnownRoles.Administrator,
-                Items =
-                [
-                    new ForgeNavItem
-                    {
-                        Title = "Logs",
-                        Href = "/logvue",
-                        Icon = "logs",
-                        External = true,
-                        Tooltip = "Log viewer",
-                    },
-                ],
             },
         ];
     }
