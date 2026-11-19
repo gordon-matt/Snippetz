@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="LogVue.Data.MySql" Version="1.1.2" />
+		<PackageReference Include="LogVue.Data.MySql" Version="1.1.6" />
 		<PackageReference Include="MySql.EntityFrameworkCore" Version="10.0.12" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14">
 			<PrivateAssets>all</PrivateAssets>
