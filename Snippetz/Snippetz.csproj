@@ -7,29 +7,28 @@
 		<RequiresAspNetWebAssets>true</RequiresAspNetWebAssets>
 		<BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<Version>1.1.1</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Ardalis.Result" Version="10.1.0" />
-		<PackageReference Include="Heroicsoft.NetForge.Authentication" Version="1.2.6" />
-		<PackageReference Include="Heroicsoft.NetForge.Components" Version="1.2.6" />
-		<PackageReference Include="LogVue" Version="1.1.6" />
-		<PackageReference Include="LogVue.Providers.Serilog" Version="1.1.6" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.14" />
-		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.14" />
-		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.14" />
-		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.14" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14">
+		<PackageReference Include="Ardalis.Result" />
+		<PackageReference Include="Heroicsoft.NetForge.Authentication" />
+		<PackageReference Include="Heroicsoft.NetForge.Components" />
+		<PackageReference Include="LogVue" />
+		<PackageReference Include="LogVue.Providers.Serilog" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
+		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.14">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="3.0.114" />
-		<PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Web.LibraryManager.Build" />
+		<PackageReference Include="Serilog.AspNetCore" />
 	</ItemGroup>
 
 	<ItemGroup>
